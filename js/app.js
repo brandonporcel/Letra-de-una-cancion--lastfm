@@ -18,27 +18,37 @@ const getAlbum = async () => {
 	try {
 		const artistName = $artistUserValue.value;
 		const songName = $songUserValue.value;
-		if ($select.value === 'album') {
-			// loader
-			const res = await fetch(
-				`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${songName}&format=json`
-			);
-			const data = await res.json();
-			if (
-				$select.value === 'undefined' ||
-				$artistUserValue.value === '' ||
-				$songUserValue.value === ''
-			) {
+		// loader
+		const res = await fetch(
+			`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${songName}&format=json`
+		);
+		const data = await res.json();
+		console.log(res);
+		console.log(data);
+		if (
+			$select.value === 'undefined' ||
+			$artistUserValue.value === '' ||
+			$songUserValue.value === ''
+		) {
+			drawError({
+				status: `${NO_CONTENT_ERROR}`,
+				statusText: `${noContentErrorText}`,
+			});
+			console.log('le falto escreibirii algogogo');
+		} else {
+			if (data.error === 6) {
 				drawError({
-					status: `${NO_CONTENT_ERROR}`,
-					statusText: `${noContentErrorText}`,
+					status: data.error,
+					statusText: data.message,
 				});
-			} else if (data.error === 6 || data.links.length === 0) {
-				console.log(data);
-				throw { status: data.error, statusText: data.message };
+			} else {
+				if (d.getElementById('error-message')) {
+					d.getElementById('error-message').innerHTML = '';
+				}
 			}
 		}
 	} catch (err) {
+		console.log(err, 'ereoreoroea');
 		drawError(err);
 	}
 };
