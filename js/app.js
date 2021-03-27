@@ -16,8 +16,8 @@ const $errorMessage = d.getElementById('error-message');
 const getLyrics = async () => {};
 const getAlbum = async () => {
 	try {
-		const artistName = $artistUserValue.value;
-		const songName = $songUserValue.value;
+		const artistName = $artistUserValue.value.trim();
+		const songName = $songUserValue.value.trim();
 		// loader
 		const res = await fetch(
 			`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${songName}&format=json`
@@ -41,7 +41,7 @@ const getAlbum = async () => {
 				});
 			} else {
 				$errorMessage.innerHTML = '';
-				// $errorMessage.classList.add('none');
+				$errorMessage.classList.add('none');
 
 				// showInfo
 			}
@@ -77,6 +77,7 @@ const drawError = (error) => {
 		error.statusText ||
 		'Ocurrio un error al buscar el disco. Es posible que no hayamos encontrado un resultado';
 	$errorMessage.innerHTML = `Error ${error.status} : ${message}`;
+	$errorMessage.classList.remove('none');
 };
 const disableFirstOption = () => {
 	$select.addEventListener('change', () => {
