@@ -11,8 +11,8 @@ const LASTFM_ALBUM_URL = `http://ws.audioscrobbler.com/2.0/?method=album.getinfo
 const NO_CONTENT_ERROR = 204;
 const noContentErrorText =
 	'Por favor revisa el casillero artista,cancion y album. Gracias';
-const $select = d.getElementById('info-select');
-
+const $select = d.getElementById('song-album-select');
+const $errorMessage = d.getElementById('error-message');
 const getLyrics = async () => {};
 const getAlbum = async () => {
 	try {
@@ -23,7 +23,6 @@ const getAlbum = async () => {
 			`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${songName}&format=json`
 		);
 		const data = await res.json();
-		console.log(res);
 		console.log(data);
 		if (
 			$select.value === 'undefined' ||
@@ -34,7 +33,6 @@ const getAlbum = async () => {
 				status: `${NO_CONTENT_ERROR}`,
 				statusText: `${noContentErrorText}`,
 			});
-			console.log('le falto escreibirii algogogo');
 		} else {
 			if (data.error === 6) {
 				drawError({
@@ -42,13 +40,14 @@ const getAlbum = async () => {
 					statusText: data.message,
 				});
 			} else {
-				if (d.getElementById('error-message')) {
-					d.getElementById('error-message').innerHTML = '';
-				}
+				$errorMessage.innerHTML = '';
+				// $errorMessage.classList.add('none');
+
+				// showInfo
 			}
 		}
 	} catch (err) {
-		console.log(err, 'ereoreoroea');
+		// i think than the function never will come here cuz i delete el throw
 		drawError(err);
 	}
 };
@@ -74,19 +73,10 @@ const albumOrSongCheck = () => {
 };
 
 const drawError = (error) => {
-	if (d.getElementById('error-message')) {
-		d.getElementById('error-message').innerHTML = '';
-	}
-	const $errorMessage = d.createElement('h3');
-	$errorMessage.id = 'error-message';
 	let message =
 		error.statusText ||
 		'Ocurrio un error al buscar el disco. Es posible que no hayamos encontrado un resultado';
 	$errorMessage.innerHTML = `Error ${error.status} : ${message}`;
-	d.querySelector('.home-form').insertAdjacentElement(
-		'afterend',
-		$errorMessage
-	);
 };
 const disableFirstOption = () => {
 	$select.addEventListener('change', () => {
