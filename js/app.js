@@ -10,7 +10,7 @@ const LASTFM_KEY = 'f0ad510d53e346996bede562a182ab55';
 const LASTFM_ALBUM_URL = `http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=${LASTFM_KEY}`;
 const NO_CONTENT_ERROR = 204;
 const noContentErrorText =
-	'Por favor revisa el casillero artista,cancion y album. Gracias';
+	'Por favor revisa el casillero artista,cancion y album.';
 const $select = d.getElementById('song-album-select');
 const $errorMessage = d.getElementById('error-message');
 const getLyrics = async () => {};
