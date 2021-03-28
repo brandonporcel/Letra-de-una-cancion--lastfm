@@ -14,16 +14,26 @@ const noContentErrorText =
 const $select = d.getElementById('song-album-select');
 const $errorMessage = d.getElementById('error-message');
 const getLyrics = async () => {};
+const drawArtistInfo = (data) => {
+	const info = data.album;
+	console.log(info);
+	d.querySelector('.artist-img').src = `${info.image[3]['#text']}`;
+	d.querySelector('.song-album-wiki').innerHTML = info.wiki.content;
+};
 const getAlbum = async () => {
 	try {
 		const artistName = $artistUserValue.value.trim();
 		const songName = $songUserValue.value.trim();
-		// loader
+		d.getElementById('query-result').insertAdjacentHTML(
+			'afterbegin',
+			'<img class="loader" alt="loader" src="../img/loader.svg"></img>'
+		);
 		const res = await fetch(
 			`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${songName}&format=json`
 		);
 		const data = await res.json();
-		console.log(data);
+
+		d.querySelector('.loader').remove();
 		if (
 			$select.value === 'undefined' ||
 			$artistUserValue.value === '' ||
@@ -43,11 +53,13 @@ const getAlbum = async () => {
 				$errorMessage.innerHTML = '';
 				$errorMessage.classList.add('none');
 
-				// showInfo
+				drawArtistInfo(data);
 			}
 		}
 	} catch (err) {
+		console.log(err);
 		// i think than the function never will come here cuz i delete el throw
+		// res will always respond ok. it may not bring any album but a object with 'Not found album' :|
 		drawError(err);
 	}
 };
