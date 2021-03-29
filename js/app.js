@@ -14,6 +14,22 @@ const noContentErrorText =
 const $select = d.getElementById('song-album-select');
 const $errorMessage = d.getElementById('error-message');
 const getLyrics = async () => {};
+const saveLastQueryLS = (artist, album, selection) => {
+	localStorage.setItem('artist', artist);
+	localStorage.setItem('album', album);
+	localStorage.setItem('selection', selection);
+};
+const setLastQueryLS = () => {
+	if (
+		localStorage.getItem('artist') ||
+		localStorage.getItem('album') ||
+		localStorage.getItem('selection')
+	) {
+		$artistUserValue.value = localStorage.getItem('artist') || '';
+		$songUserValue.value = localStorage.getItem('album') || '';
+		$select.value = localStorage.getItem('selection') || 'undefined';
+	}
+};
 const drawArtistInfo = (data) => {
 	const info = data.album;
 	console.log(info);
@@ -23,13 +39,13 @@ const drawArtistInfo = (data) => {
 const getAlbum = async () => {
 	try {
 		const artistName = $artistUserValue.value.trim();
-		const songName = $songUserValue.value.trim();
+		const albumName = $songUserValue.value.trim();
 		d.getElementById('query-result').insertAdjacentHTML(
 			'afterbegin',
 			'<img class="loader" alt="loader" src="../img/loader.svg"></img>'
 		);
 		const res = await fetch(
-			`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${songName}&format=json`
+			`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${albumName}&format=json`
 		);
 		const data = await res.json();
 
@@ -54,6 +70,7 @@ const getAlbum = async () => {
 				$errorMessage.classList.add('none');
 
 				drawArtistInfo(data);
+				saveLastQueryLS(artistName, albumName, $select.value);
 			}
 		}
 	} catch (err) {
@@ -100,4 +117,5 @@ const disableFirstOption = () => {
 d.addEventListener('DOMContentLoaded', () => {
 	disableFirstOption();
 	albumOrSongCheck();
+	setLastQueryLS();
 });
