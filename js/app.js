@@ -32,18 +32,42 @@ const setLastQueryLS = () => {
 };
 const drawArtistInfo = (data) => {
 	const info = data.album;
+	let tracks = '';
 	console.log(info);
 	d.querySelector('.artist-img').src = `${info.image[3]['#text']}`;
 	d.querySelector('.song-album-wiki').innerHTML = info.wiki.content;
+	info.tracks.track.forEach((el) => {
+		const trackDuration = `${Math.floor(el.duration / 60)}:${(
+			'0' +
+			(el.duration % 60)
+		).slice(-2)}`;
+
+		tracks += `
+		<li> 
+			<div class="album-track-ctn">
+				<a href=${el.url} target="_blank">${el.name}</a>
+				<span>${trackDuration}</span>
+			</div>
+		</li>`;
+	});
+	d.querySelector('.song-album-tracks').innerHTML = tracks;
+
+	d.querySelector(
+		'.song-album-title-a'
+	).innerHTML = `${info.name} - ${info.artist}`;
+	d.querySelector('.song-album-title-a').href = info.url;
+	d.querySelector('.song-album-title-a').target = '_blank';
 };
 const getAlbum = async () => {
 	try {
+		/* d.getElementById('query-result').classList.remove('none'); */
 		const artistName = $artistUserValue.value.trim();
 		const albumName = $songUserValue.value.trim();
 		d.getElementById('query-result').insertAdjacentHTML(
 			'afterbegin',
 			'<img class="loader" alt="loader" src="../img/loader.svg"></img>'
 		);
+
 		const res = await fetch(
 			`${LASTFM_ALBUM_URL}&artist=${artistName}&album=${albumName}&format=json`
 		);
