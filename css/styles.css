@@ -136,6 +136,15 @@ input[type='submit'] {
 	text-align: center;
 	margin: 20px auto;
 }
+.tags {
+	list-style: none;
+	display: flex;
+	justify-content: space-between;
+}
+.tag-li {
+	font-size: 12px;
+	padding-bottom: 5px;
+}
 summary {
 	outline: none;
 }

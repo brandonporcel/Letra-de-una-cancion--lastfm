@@ -1,6 +1,7 @@
 const d = document;
 
-const $ul = d.getElementById('ul');
+const $queryAlbumResult = d.getElementById('query-result');
+const $albumTemplate = d.getElementById('query-result-template').content;
 const $artistUserValue = d.getElementById('artist-input');
 const $songUserValue = d.getElementById('song-input');
 const $form = d.getElementById('form');
@@ -13,7 +14,93 @@ const noContentErrorText =
 	'Por favor revisa el casillero artista,cancion y album.';
 const $select = d.getElementById('song-album-select');
 const $errorMessage = d.getElementById('error-message');
-const getLyrics = async () => {};
+// draw lyrics info-api.lyrics.ovh
+const drawLyrics = (data) => {
+	console.log(data);
+};
+// draw album info-lastfm api
+const drawArtistInfo = (data) => {
+	// stop duplicate template
+	if (d.querySelector('.query-result')) {
+		document.querySelector('.query-result').remove();
+	}
+	const info = data.album;
+	let tracks = '';
+	let tags = '';
+	const fragment = d.createDocumentFragment();
+
+	$albumTemplate.querySelector('.artist-img').src = `${info.image[3]['#text']}`;
+	$albumTemplate.querySelector('.song-album-wiki').innerHTML =
+		info.wiki.content;
+	info.tracks.track.forEach((el) => {
+		const trackDuration = `${Math.floor(el.duration / 60)}:${(
+			'0' +
+			(el.duration % 60)
+		).slice(-2)}`;
+
+		tracks += `
+			<li> 
+				<div class="album-track-ctn">
+					<a href=${el.url} target="_blank">${el.name}</a>
+					<span>${trackDuration}</span>
+				</div>
+			</li>`;
+	});
+	$albumTemplate.querySelector('.song-album-tracks').innerHTML = tracks;
+	info.tags.tag.forEach((el) => {
+		tags += `
+			<li class="tag-li"> 
+				<a href=${el.url} target="_blank">- ${el.name} -</a>
+			</li>`;
+	});
+	$albumTemplate.querySelector('.tags').innerHTML = tags;
+	$albumTemplate.querySelector(
+		'.song-album-title-a'
+	).innerHTML = `${info.name} - ${info.artist}`;
+	$albumTemplate.querySelector('.song-album-title-a').href = info.url;
+	$albumTemplate.querySelector('.song-album-title-a').target = '_blank';
+
+	const $clone = $albumTemplate.cloneNode(true);
+	fragment.appendChild($clone);
+	$queryAlbumResult.appendChild(fragment);
+};
+const getLyrics = async () => {
+	try {
+		const artistName = $artistUserValue.value.trim();
+		const songName = $songUserValue.value.trim();
+		$queryAlbumResult.insertAdjacentHTML(
+			'afterbegin',
+			'<img class="loader" alt="loader" src="../img/loader.svg"></img>'
+		);
+		const res = await fetch(
+			`https://api.lyrics.ovh/v1/${artistName}/${songName}`
+		);
+		const data = await res.json();
+		d.querySelector('.loader').remove();
+		if (
+			$select.value === 'undefined' ||
+			$artistUserValue.value === '' ||
+			$songUserValue.value === ''
+		) {
+			drawError({
+				status: `${NO_CONTENT_ERROR}`,
+				statusText: `${noContentErrorText}`,
+			});
+		} else {
+			$errorMessage.innerHTML = '';
+			$errorMessage.classList.add('none');
+			console.log($select.value, 'cancionasdnasjdajs');
+			drawLyrics(data);
+			saveLastQueryLS(artistName, songName, $select.value);
+		}
+	} catch (err) {
+		if (d.querySelector('.loader')) {
+			d.querySelector('.loader').remove();
+		}
+		drawError(err);
+		console.log(err);
+	}
+};
 const saveLastQueryLS = (artist, album, selection) => {
 	localStorage.setItem('artist', artist);
 	localStorage.setItem('album', album);
@@ -30,40 +117,12 @@ const setLastQueryLS = () => {
 		$select.value = localStorage.getItem('selection') || 'undefined';
 	}
 };
-const drawArtistInfo = (data) => {
-	const info = data.album;
-	let tracks = '';
-	console.log(info);
-	d.querySelector('.artist-img').src = `${info.image[3]['#text']}`;
-	d.querySelector('.song-album-wiki').innerHTML = info.wiki.content;
-	info.tracks.track.forEach((el) => {
-		const trackDuration = `${Math.floor(el.duration / 60)}:${(
-			'0' +
-			(el.duration % 60)
-		).slice(-2)}`;
 
-		tracks += `
-		<li> 
-			<div class="album-track-ctn">
-				<a href=${el.url} target="_blank">${el.name}</a>
-				<span>${trackDuration}</span>
-			</div>
-		</li>`;
-	});
-	d.querySelector('.song-album-tracks').innerHTML = tracks;
-
-	d.querySelector(
-		'.song-album-title-a'
-	).innerHTML = `${info.name} - ${info.artist}`;
-	d.querySelector('.song-album-title-a').href = info.url;
-	d.querySelector('.song-album-title-a').target = '_blank';
-};
 const getAlbum = async () => {
 	try {
-		/* d.getElementById('query-result').classList.remove('none'); */
 		const artistName = $artistUserValue.value.trim();
 		const albumName = $songUserValue.value.trim();
-		d.getElementById('query-result').insertAdjacentHTML(
+		$queryAlbumResult.insertAdjacentHTML(
 			'afterbegin',
 			'<img class="loader" alt="loader" src="../img/loader.svg"></img>'
 		);
@@ -99,6 +158,7 @@ const getAlbum = async () => {
 		}
 	} catch (err) {
 		console.log(err);
+
 		// i think than the function never will come here cuz i delete el throw
 		// res will always respond ok. it may not bring any album but a object with 'Not found album' :|
 		drawError(err);
@@ -128,7 +188,7 @@ const albumOrSongCheck = () => {
 const drawError = (error) => {
 	let message =
 		error.statusText ||
-		'Ocurrio un error al buscar el disco. Es posible que no hayamos encontrado un resultado';
+		'Ocurrio un error al buscar el disco/cancion. Es posible que no hayamos encontrado un resultado';
 	$errorMessage.innerHTML = `Error ${error.status} : ${message}`;
 	$errorMessage.classList.remove('none');
 };
