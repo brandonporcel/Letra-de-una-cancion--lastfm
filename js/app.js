@@ -1,6 +1,7 @@
 const d = document;
 
-const $queryAlbumResult = d.getElementById('query-result');
+const $queryAlbumSongResult = d.getElementById('query-result');
+const $songTemplate = d.getElementById('lyrics-template').content;
 const $albumTemplate = d.getElementById('query-result-template').content;
 const $artistUserValue = d.getElementById('artist-input');
 const $songUserValue = d.getElementById('song-input');
@@ -16,7 +17,11 @@ const $select = d.getElementById('song-album-select');
 const $errorMessage = d.getElementById('error-message');
 // draw lyrics info-api.lyrics.ovh
 const drawLyrics = (data) => {
-	console.log(data);
+	const $fragment = d.createDocumentFragment();
+
+	$songTemplate.querySelector('.lyrics').innerHTML = data.lyrics;
+	$fragment.appendChild($songTemplate);
+	$queryAlbumSongResult.appendChild($fragment);
 };
 // draw album info-lastfm api
 const drawArtistInfo = (data) => {
@@ -62,13 +67,13 @@ const drawArtistInfo = (data) => {
 
 	const $clone = $albumTemplate.cloneNode(true);
 	fragment.appendChild($clone);
-	$queryAlbumResult.appendChild(fragment);
+	$queryAlbumSongResult.appendChild(fragment);
 };
 const getLyrics = async () => {
 	try {
 		const artistName = $artistUserValue.value.trim();
 		const songName = $songUserValue.value.trim();
-		$queryAlbumResult.insertAdjacentHTML(
+		$queryAlbumSongResult.insertAdjacentHTML(
 			'afterbegin',
 			'<img class="loader" alt="loader" src="../img/loader.svg"></img>'
 		);
@@ -89,7 +94,7 @@ const getLyrics = async () => {
 		} else {
 			$errorMessage.innerHTML = '';
 			$errorMessage.classList.add('none');
-			console.log($select.value, 'cancionasdnasjdajs');
+
 			drawLyrics(data);
 			saveLastQueryLS(artistName, songName, $select.value);
 		}
@@ -122,7 +127,7 @@ const getAlbum = async () => {
 	try {
 		const artistName = $artistUserValue.value.trim();
 		const albumName = $songUserValue.value.trim();
-		$queryAlbumResult.insertAdjacentHTML(
+		$queryAlbumSongResult.insertAdjacentHTML(
 			'afterbegin',
 			'<img class="loader" alt="loader" src="../img/loader.svg"></img>'
 		);
