@@ -17,10 +17,16 @@ const $select = d.getElementById('song-album-select');
 const $errorMessage = d.getElementById('error-message');
 // draw lyrics info-api.lyrics.ovh
 const drawLyrics = (data) => {
+	// stop duplicate template
+	if (d.querySelector('.lyrics-container')) {
+		document.querySelector('.lyrics-container').remove();
+	} else if (d.querySelector('.query-result')) {
+		d.querySelector('.query-result').remove();
+	}
 	const $fragment = d.createDocumentFragment();
-
 	$songTemplate.querySelector('.lyrics').innerHTML = data.lyrics;
-	$fragment.appendChild($songTemplate);
+	const $clone = $songTemplate.cloneNode(true);
+	$fragment.appendChild($clone);
 	$queryAlbumSongResult.appendChild($fragment);
 };
 // draw album info-lastfm api
@@ -28,6 +34,8 @@ const drawArtistInfo = (data) => {
 	// stop duplicate template
 	if (d.querySelector('.query-result')) {
 		document.querySelector('.query-result').remove();
+	} else if (d.querySelector('.lyrics-container')) {
+		d.querySelector('.lyrics-container').remove();
 	}
 	const info = data.album;
 	let tracks = '';
@@ -99,9 +107,9 @@ const getLyrics = async () => {
 			saveLastQueryLS(artistName, songName, $select.value);
 		}
 	} catch (err) {
-		if (d.querySelector('.loader')) {
-			d.querySelector('.loader').remove();
-		}
+		// if (d.querySelector('.loader')) {
+		// 	d.querySelector('.loader').remove();
+		// }
 		drawError(err);
 		console.log(err);
 	}
@@ -163,7 +171,6 @@ const getAlbum = async () => {
 		}
 	} catch (err) {
 		console.log(err);
-
 		// i think than the function never will come here cuz i delete el throw
 		// res will always respond ok. it may not bring any album but a object with 'Not found album' :|
 		drawError(err);

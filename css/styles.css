@@ -96,7 +96,11 @@ input[type='submit'] {
 }
 
 /*  */
-
+.query-result {
+	width: 100%;
+	display: flex;
+	padding: 0 120px;
+}
 .song-album-result,
 .artist-result {
 	width: 50%;
@@ -121,8 +125,7 @@ input[type='submit'] {
 	padding: 0 0 10px;
 	font-size: 23px;
 	font-family: 'Work Sans', sans-serif;
-	border-bottom: 3px solid #eb6864;
-
+	border-bottom: 3px solid var(--contrast-color);
 	margin-bottom: var(--margin-bottom);
 }
 .song-album-info-title {
@@ -134,6 +137,7 @@ input[type='submit'] {
 	list-style: none;
 	display: flex;
 	justify-content: space-between;
+	margin-bottom: 10px;
 }
 .tag-li {
 	font-size: 12px;
