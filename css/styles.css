@@ -211,6 +211,9 @@ a {
 	.song-album-result {
 		width: 60%;
 	}
+	.lyrics-container{
+		width:55%;
+	}
 }
 @media screen and (max-width: 700px) {
 	.query-container {
@@ -260,5 +263,8 @@ a {
 	}
 	.song-album-info-title {
 		width: 80%;
+	}
+	.lyrics-container{
+		width:85%;
 	}
 }
